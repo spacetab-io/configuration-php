@@ -82,14 +82,14 @@ It possible with multiple ways:
 1) Install to `/usr/local/bin` as global binary
 
 ```bash
-L=/usr/local/bin/st-conf && sudo curl -L https://github.com/microparts/configuration-php/releases/download/2.2.0/st-conf.phar -o $L && sudo chmod +x $L
+L=/usr/local/bin/st-conf && sudo curl -L https://github.com/spacetab-io/configuration-php/releases/download/2.2.0/st-conf.phar -o $L && sudo chmod +x $L
 ```
 
 2) Install library as global composer requirements
 
 First step:
 ```bash
-composer global require microparts/configuration-php
+composer global require spacetab-io/configuration-php
 ```
 
 It will be installed to `~/.composer` directory.
