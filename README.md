@@ -136,7 +136,7 @@ Help:
 
 ## Depends
 
-* \>= PHP 7.1
+* \>= PHP 7.4 (for prev version use `2.x` releases of library)
 * Composer for install package
 
 ## License
