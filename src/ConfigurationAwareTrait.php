@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Spacetab\Configuration;
 
@@ -12,14 +14,14 @@ trait ConfigurationAwareTrait
      *
      * @var \Spacetab\Configuration\ConfigurationInterface
      */
-    protected $configuration;
+    protected ConfigurationInterface $configuration;
 
     /**
      * Sets a configuration.
      *
      * @param \Spacetab\Configuration\ConfigurationInterface $configuration
      */
-    public function setConfiguration(ConfigurationInterface $configuration)
+    public function setConfiguration(ConfigurationInterface $configuration): void
     {
         $this->configuration = $configuration;
     }

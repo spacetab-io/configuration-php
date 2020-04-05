@@ -7,10 +7,6 @@
     {
       "name": "Roquie",
       "email": "roquie0@gmail.com"
-    },
-    {
-      "name": "Shatilo Reymond",
-      "email": "shatilo.reymond@gmail.com"
     }
   ],
   "bin": ["bin/st-conf"],
@@ -20,6 +16,7 @@
     }
   },
   "require": {
+    "php": ">=7.4",
     "symfony/yaml": "^4.2 || ^5.0",
     "psr/log": "^1.0",
     "symfony/console": "^4.3 || ^5.0"
@@ -28,7 +25,8 @@
     "phpunit/phpunit": "^9",
     "symfony/var-dumper": "^4.2 || ^5.0",
     "humbug/box": "^3.8",
-    "spacetab-io/logger-php": "^1.0"
+    "spacetab-io/logger-php": "^1.0",
+    "phpstan/phpstan": "^0.12.18"
   },
   "suggest": {
     "ext-yaml": "For fast yaml parsing."

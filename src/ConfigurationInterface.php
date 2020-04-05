@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Spacetab\Configuration;
 
@@ -14,7 +16,7 @@ interface ConfigurationInterface
      * E.g get('x.y', 'foo') => returns the value of $config['x']['y']
      * And if not exist, return 'foo'
      *
-     * @param $key
+     * @param mixed $key
      * @param null $default
      * @return mixed
      */
@@ -25,5 +27,5 @@ interface ConfigurationInterface
      *
      * @return array
      */
-    public function all();
+    public function all(): array;
 }

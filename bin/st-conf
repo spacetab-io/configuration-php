@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-use Microparts\Configuration\Console\DumpConfigCommand;
+use Spacetab\Configuration\Console\DumpConfigCommand;
 use Symfony\Component\Console\Application;
 
 $locations = [

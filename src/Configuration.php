@@ -1,13 +1,14 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Spacetab\Configuration;
 
 use ArrayAccess;
-use InvalidArgumentException;
-use LogicException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
+use Spacetab\Configuration\Exception\ConfigurationException;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -24,7 +25,7 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
      *
      * @var array
      */
-    private static $possibleLocations = [
+    private static array $possibleLocations = [
         '/app/configuration',
         '/configuration',
         './configuration',
@@ -32,17 +33,17 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
     ];
 
     /**
-     * Name of CONFIG_PATH variable
+     * Name of CONFIG_PATH variable.
      */
     private const CONFIG_PATH = 'CONFIG_PATH';
 
     /**
-     * Name of stage ENV variable
+     * Name of stage ENV variable.
      */
     private const STAGE = 'STAGE';
 
     /**
-     * Default configuration stage
+     * Default configuration stage.
      */
     private const DEFAULT_STAGE = 'defaults';
 
@@ -52,39 +53,35 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
     private const DEFAULT_CONFIG_PATH = '/app/configuration';
 
     /**
-     * Config tree goes here
+     * Config tree goes here.
      */
-    private $config;
+    private array $config;
 
     /**
-     * @var null|string
+     * @var string
      */
-    private $path;
+    private string $path;
 
     /**
-     * @var null|string
+     * @var string
      */
-    private $stage;
+    private string $stage;
 
     /**
      * Configuration constructor.
      *
      * @param null|string $path
      * @param null|string $stage
+     *
+     * @throws \Spacetab\Configuration\Exception\ConfigurationException
      */
     public function __construct(?string $path = null, ?string $stage = null)
     {
-        if (null === $path) {
-            $this->setPath($this->getEnvVariable(self::CONFIG_PATH, self::DEFAULT_CONFIG_PATH));
-        } else {
-            $this->setPath($path);
-        }
+        $envPath  = $this->getEnvVariable(self::CONFIG_PATH, self::DEFAULT_CONFIG_PATH);
+        $envStage = $this->getEnvVariable(self::STAGE, self::DEFAULT_STAGE);
 
-        if (null === $stage) {
-            $this->setStage($this->getEnvVariable(self::STAGE, self::DEFAULT_STAGE));
-        } else {
-            $this->setStage($stage);
-        }
+        null === $path ? $this->setPath($envPath) : $this->setPath($path);
+        null === $stage ? $this->setStage($envStage) : $this->setStage($stage);
 
         // Set up default black hole logger.
         // If u want to see logs and see how load process working,
@@ -97,9 +94,11 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
      * Specially for lazy-based programmers like me.
      *
      * @param string|null $stage
+     * @throws \Spacetab\Configuration\Exception\ConfigurationException
+     *
      * @return Configuration
      */
-    public static function auto(?string $stage = null)
+    public static function auto(?string $stage = null): Configuration
     {
         return new Configuration(self::findDirectories(), $stage);
     }
@@ -109,8 +108,9 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
      * E.g get('x.y', 'foo') => returns the value of $config['x']['y']
      * And if not exist, return 'foo'
      *
-     * @param $key
+     * @param mixed $key
      * @param null $default
+     *
      * @return mixed
      */
     public function get($key, $default = null)
@@ -125,22 +125,23 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
     }
 
     /**
-     * Gets all the tree config
+     * Gets all the tree config.
      *
-     * @return mixed
+     * @return array
      */
-    public function all()
+    public function all(): array
     {
         return $this->config;
     }
 
     /**
-     * Set the configuration path
+     * Set the configuration path.
      *
-     * @param null|string $path
+     * @param string $path
+     *
      * @return Configuration
      */
-    public function setPath(?string $path): Configuration
+    public function setPath(string $path): Configuration
     {
         $this->path = realpath($path) ?: $path;
 
@@ -148,20 +149,23 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
     }
 
     /**
-     * Get the configuration path
+     * Get the configuration path.
      *
-     * @return null|string
+     * @return string
      */
-    public function getPath(): ?string
+    public function getPath(): string
     {
         return $this->path;
     }
 
     /**
-     * @param null|string $stage
+     * Set stage for reading configuration.
+     *
+     * @param string $stage
+     *
      * @return Configuration
      */
-    public function setStage(?string $stage): Configuration
+    public function setStage(string $stage): Configuration
     {
         $this->stage = $stage;
 
@@ -169,9 +173,9 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
     }
 
     /**
-     * @return null|string
+     * @return string
      */
-    public function getStage(): ?string
+    public function getStage(): string
     {
         return $this->stage;
     }
@@ -182,14 +186,12 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
      * @link https://php.net/manual/en/arrayaccess.offsetexists.php
      * @param mixed $offset <p>
      * An offset to check for.
-     * </p>
-     * @return boolean true on success or false on failure.
-     * </p>
-     * <p>
      * The return value will be casted to boolean if non-boolean was returned.
      * @since 5.0.0
+     *
+     * @return boolean true on success or false on failure.
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return ! empty($this->get($offset));
     }
@@ -201,8 +203,9 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
      * @param mixed $offset <p>
      * The offset to retrieve.
      * </p>
-     * @return mixed Can return all value types.
      * @since 5.0.0
+     *
+     * @return mixed Can return all value types.
      */
     public function offsetGet($offset)
     {
@@ -219,12 +222,14 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
      * @param mixed $value <p>
      * The value to set.
      * </p>
-     * @return void
      * @since 5.0.0
+     * @throws \Spacetab\Configuration\Exception\ConfigurationException
+     *
+     * @return void
      */
     public function offsetSet($offset, $value)
     {
-        throw new LogicException('Not allowed here.');
+        throw ConfigurationException::operationNotAllowed();
     }
 
     /**
@@ -234,26 +239,25 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
      * @param mixed $offset <p>
      * The offset to unset.
      * </p>
-     * @return void
      * @since 5.0.0
+     * @throws \Spacetab\Configuration\Exception\ConfigurationException
+     *
+     * @return void
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
-        throw new LogicException('Not allowed here.');
+        throw ConfigurationException::operationNotAllowed();
     }
 
     /**
      * Initialize all the magic down here
+     *
+     * @throws \Spacetab\Configuration\Exception\ConfigurationException
      */
     public function load(): Configuration
     {
         $this->logger->info(self::CONFIG_PATH . ' = ' . $this->getPath());
         $this->logger->info(self::STAGE . ' = ' . $this->getStage());
-
-        if ($this->getPath() !== self::DEFAULT_CONFIG_PATH) {
-            $message = 'Please use default [%s] configuration location instead of [%s]. If you use configuration locally, ignore this message.';
-            $this->logger->warning(sprintf($message, self::DEFAULT_CONFIG_PATH, $this->getPath()));
-        }
 
         $second = $this->getStage() !== self::DEFAULT_STAGE
             ? $this->parseConfiguration($this->getStage())
@@ -282,19 +286,20 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
     }
 
     /**
-     * Parses configuration and makes a tree of it
+     * Parses configuration and makes a tree of it.
      *
      * @param string $stage
+     * @throws \Spacetab\Configuration\Exception\ConfigurationException
+     *
      * @return array
      */
-    private function parseConfiguration(string $stage = self::DEFAULT_STAGE)
+    private function parseConfiguration(string $stage = self::DEFAULT_STAGE): array
     {
         $pattern = $this->getPath() . '/' . $stage . '/*.yaml';
         $files   = glob($pattern, GLOB_NOSORT | GLOB_ERR);
 
         if ($files === false || count($files) < 1) {
-            $message = "Glob does not walk to files, pattern: {$pattern}. Path is correct?";
-            throw new InvalidArgumentException($message);
+            throw ConfigurationException::filesNotFound($pattern, $this->path, $this->stage);
         }
 
         $this->logger->debug('Following config files found:', $files);
@@ -306,8 +311,7 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
             $top       = key($content);
 
             if ($directory !== $top) {
-                $message = 'Invalid! Stage of config directory [%s] is not equals top of yaml content [%s].';
-                throw new InvalidArgumentException(sprintf($message, $directory, $top));
+                throw ConfigurationException::fileNotEqualsCurrentStage($directory, $top, $filename);
             }
 
             $this->logger->debug(sprintf('Config %s/%s [top=%s] is fine.', $directory, basename($filename), $top));
@@ -319,13 +323,14 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
     }
 
     /**
-     * Takes an env variable and returns default if not exist
+     * Takes an env variable and returns default if not exist.
      *
      * @param string $variable
      * @param string $default
+     *
      * @return string
      */
-    private static function getEnvVariable(string $variable, string $default = '')
+    private static function getEnvVariable(string $variable, string $default = ''): string
     {
         return getenv($variable) ?: $default;
     }
@@ -335,6 +340,7 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
      * but not merge sequential list.
      *
      * @param array ...$arrays
+     *
      * @return array|mixed
      */
     private function arrayMergeRecursive(array ...$arrays)
@@ -378,6 +384,7 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
      * Check if array is associative or sequential list.
      *
      * @param array $array
+     *
      * @return bool
      */
     private function isAssoc(array $array): bool
@@ -391,6 +398,8 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
 
     /**
      * Automatically find configuration in possible paths.
+     *
+     * @throws \Spacetab\Configuration\Exception\ConfigurationException
      *
      * @return string
      */
@@ -407,9 +416,6 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
             }
         }
 
-        throw new LogicException(sprintf(
-            'Configuration directory not found in known path\'s: %s',
-            join(',', self::$possibleLocations)
-        ));
+        throw ConfigurationException::autoFindConfigurationDirFailed(self::$possibleLocations);
     }
 }

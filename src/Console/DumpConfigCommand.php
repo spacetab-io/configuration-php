@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Spacetab\Configuration\Console;
 
@@ -32,10 +34,11 @@ class DumpConfigCommand extends Command
      *
      * @param \Symfony\Component\Console\Input\InputInterface $input
      * @param \Symfony\Component\Console\Output\OutputInterface $output
+     * @throws \Spacetab\Configuration\Exception\ConfigurationException
      *
-     * @return void
+     * @return int
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $conf = new Configuration(
             $input->getArgument('path'),
@@ -54,5 +57,7 @@ class DumpConfigCommand extends Command
         );
 
         $output->writeln($string);
+
+        return 0;
     }
 }

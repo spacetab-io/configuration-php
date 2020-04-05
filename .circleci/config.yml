@@ -7,7 +7,7 @@ jobs:
   build:
     docker:
       # specify the version you desire here
-      - image: circleci/php:7.3-browsers
+      - image: circleci/php:7.4-browsers
 
     working_directory: ~/repo
 
@@ -22,6 +22,7 @@ jobs:
             - v1-dependencies-
       - run: composer install -n --prefer-dist || echo "Circle CI interrupt bug"
       # run tests!
+      - run: vendor/bin/phpstan analyse src --level=4
       - run: vendor/bin/phpunit --coverage-clover=coverage.xml || echo "Circle CI interrupt bug"
       - run: bash <(curl -s https://codecov.io/bash) || echo "Circle CI interrupt bug"
       # compile phar archive

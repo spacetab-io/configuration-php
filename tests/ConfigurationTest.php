@@ -3,9 +3,9 @@
 namespace Spacetab\Configuration\Tests;
 
 use Exception;
-use InvalidArgumentException;
 use Spacetab\Configuration\Configuration;
 use PHPUnit\Framework\TestCase;
+use Spacetab\Configuration\Exception\ConfigurationException;
 use Symfony\Component\Yaml\Yaml;
 
 class ConfigurationTest extends TestCase
@@ -79,7 +79,7 @@ class ConfigurationTest extends TestCase
     }
 
     /**
-     * @param \Microparts\Configuration\Configuration $conf
+     * @param \Spacetab\Configuration\Configuration $conf
      */
     private function followAssertions(Configuration $conf)
     {
@@ -155,8 +155,8 @@ class ConfigurationTest extends TestCase
 
     public function testHowWorksUserMistakePrevention()
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessageMatches('/Invalid\! Stage of config directory \[.*\] is not equals top of yaml content \[.*\]\./');
+        $this->expectException(ConfigurationException::class);
+        $this->expectExceptionMessageMatches('/Developer error\! STAGE .*/');
 
         $conf = new Configuration(__DIR__ . '/configuration_user_mistake1', 'test');
         $conf->load();
@@ -165,13 +165,13 @@ class ConfigurationTest extends TestCase
     /**
      * Copy a file, or recursively copy a folder and its contents
      *
-     * @author      Aidan Lister <aidan@php.net>
+     * @param string $source Source path
+     * @param string $dest Destination path
+     * @param int $permissions New folder creation permissions
+     * @return      bool     Returns true on success, false on failure
      * @version     1.0.1
      * @link        http://aidanlister.com/2004/04/recursively-copying-directories-in-php/
-     * @param       string $source Source path
-     * @param       string $dest Destination path
-     * @param       int $permissions New folder creation permissions
-     * @return      bool     Returns true on success, false on failure
+     * @author      Aidan Lister <aidan@php.net>
      */
     private function xcopy($source, $dest, $permissions = 0755)
     {
@@ -210,7 +210,6 @@ class ConfigurationTest extends TestCase
 
     /**
      * https://stackoverflow.com/questions/1653771/how-do-i-remove-a-directory-that-is-not-empty
-     *
      * @param $dir
      * @return bool
      */

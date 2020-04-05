@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Spacetab\Configuration;
 
@@ -14,6 +16,6 @@ interface ConfigurationAwareInterface
      *
      * @return void
      */
-    public function setConfiguration(ConfigurationInterface $configuration);
+    public function setConfiguration(ConfigurationInterface $configuration): void;
 }
 
