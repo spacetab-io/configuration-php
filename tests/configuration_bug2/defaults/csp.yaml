@@ -1,0 +1,3 @@
+defaults:
+  content_security_policy:
+    - foo

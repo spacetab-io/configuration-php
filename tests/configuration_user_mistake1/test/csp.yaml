@@ -1,0 +1,4 @@
+defaults: # this is mistake!
+  content_security_policy:
+    - "default-src 'self' cdn.example.com"
+    - "img-src 'self' img.example.com"

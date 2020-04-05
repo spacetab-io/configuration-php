@@ -1,0 +1,63 @@
+# PHP CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-php/ for more details
+#
+version: 2
+jobs:
+  build:
+    docker:
+      # specify the version you desire here
+      - image: circleci/php:7.3-browsers
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ .Branch }}-{{ checksum "composer.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-{{ .Branch }}-
+            - v1-dependencies-
+      - run: composer install -n --prefer-dist || echo "Circle CI interrupt bug"
+      # run tests!
+      - run: vendor/bin/phpunit --coverage-clover=coverage.xml || echo "Circle CI interrupt bug"
+      - run: bash <(curl -s https://codecov.io/bash) || echo "Circle CI interrupt bug"
+      # compile phar archive
+      - run: vendor/bin/box compile || echo "Circle CI interrupt bug"
+      - run: echo "$(git describe --tags $(git rev-list --tags --max-count=1))" > ./version
+      - persist_to_workspace:
+          root: .
+          paths:
+            - bin/
+            - version
+      - save_cache:
+          paths:
+            - ./vendor
+          key: v1-dependencies-{{ checksum "composer.json" }}
+
+
+  publish-github-release:
+    docker:
+      - image: cibuilds/github:0.10
+    steps:
+      - attach_workspace:
+          at: /tmp
+      - run:
+          name: "Publish Release on GitHub"
+          command: |
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete $(cat /tmp/version) /tmp/bin/st-conf.phar
+
+workflows:
+  version: 2
+  total:
+    jobs:
+      - build
+      - publish-github-release:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - master

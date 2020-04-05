@@ -1,0 +1,4 @@
+{
+  "output": "bin/st-conf.phar",
+  "main": "bin/st-conf"
+}

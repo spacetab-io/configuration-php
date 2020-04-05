@@ -1,0 +1,2 @@
+defaults:
+  content_security_policy: []
