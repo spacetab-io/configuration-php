@@ -10,7 +10,7 @@ for follow up corporate standards of application configuration.
 ## Installation
 
 ```bash
-composer require spacetab-io/configuration-php
+composer require spacetab-io/configuration
 ```
 
 ## Usage

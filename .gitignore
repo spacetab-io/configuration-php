@@ -2,3 +2,4 @@
 .idea
 scratch
 .phpunit.result.cache
+composer.lock
