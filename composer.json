@@ -25,7 +25,8 @@
     "phpunit/phpunit": "^9",
     "symfony/var-dumper": "^4.2 || ^5.0",
     "humbug/box": "^3.8",
-    "phpstan/phpstan": "^0.12.18"
+    "phpstan/phpstan": "^0.12.18",
+    "spacetab-io/logger": "^1.0"
   },
   "suggest": {
     "ext-yaml": "For fast yaml parsing."
