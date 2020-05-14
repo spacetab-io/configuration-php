@@ -69,7 +69,7 @@ class ConfigurationException extends Exception
     }
 
     /**
-     * @param array $possibleLocations
+     * @param array<string> $possibleLocations
      *
      * @return self
      */

@@ -17,7 +17,7 @@ interface ConfigurationInterface
      * And if not exist, return 'foo'
      *
      * @param mixed $key
-     * @param null $default
+     * @param mixed $default
      * @return mixed
      */
     public function get($key, $default = null);
@@ -25,7 +25,7 @@ interface ConfigurationInterface
     /**
      * Gets all the tree config
      *
-     * @return array
+     * @return array<mixed>
      */
     public function all(): array;
 }

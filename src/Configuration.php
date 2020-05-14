@@ -14,6 +14,7 @@ use Symfony\Component\Yaml\Yaml;
 /**
  * Class Configuration
  *
+ * @implements \ArrayAccess<mixed, mixed>
  * @package Spacetab\Configuration
  */
 final class Configuration implements ConfigurationInterface, ArrayAccess, LoggerAwareInterface
@@ -23,7 +24,7 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
     /**
      * Possible path's of configuration.
      *
-     * @var array
+     * @var array<string>
      */
     private static array $possibleLocations = [
         '/app/configuration',
@@ -54,6 +55,8 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
 
     /**
      * Config tree goes here.
+     *
+     * @var array<mixed>
      */
     private array $config;
 
@@ -109,7 +112,7 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
      * And if not exist, return 'foo'
      *
      * @param mixed $key
-     * @param null $default
+     * @param mixed $default
      *
      * @return mixed
      */
@@ -127,7 +130,7 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
     /**
      * Gets all the tree config.
      *
-     * @return array
+     * @return array<mixed>
      */
     public function all(): array
     {
@@ -291,7 +294,7 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
      * @param string $stage
      * @throws \Spacetab\Configuration\Exception\ConfigurationException
      *
-     * @return array
+     * @return array<mixed>
      */
     private function parseConfiguration(string $stage = self::DEFAULT_STAGE): array
     {
@@ -383,7 +386,7 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
     /**
      * Check if array is associative or sequential list.
      *
-     * @param array $array
+     * @param array<mixed> $array
      *
      * @return bool
      */
