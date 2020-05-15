@@ -20,6 +20,7 @@ loading from `/app/configuration` with `local` stage.
 
 1) Simple
 ```php
+<?php
 use Spacetab\Configuration\Configuration;
 
 $conf = new Configuration();
@@ -34,6 +35,7 @@ echo $conf['foo.bar']; // thie same, but use ArrayAccess interface.
 class constructor or set up use setters.
 
 ```php
+<?php
 use Spacetab\Configuration\Configuration;
 
 $conf = new Configuration(__DIR__ . '/configuration', 'test');
@@ -51,6 +53,7 @@ export STAGE=prod
 ```
 
 ```php
+<?php
 use Spacetab\Configuration\Configuration;
 
 $conf = new Configuration();
@@ -63,6 +66,7 @@ $conf->get('key'); // full example on the top
 pass you application logger to the following method:
 
 ```php
+<?php
 use Spacetab\Configuration\Configuration;
 
 $conf = new Configuration();
