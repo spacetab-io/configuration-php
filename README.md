@@ -1,11 +1,11 @@
-PHP Microservice configuration module
--------------------------------------
+PHP Configuration
+-----------------
 
 [![CircleCI](https://circleci.com/gh/spacetab-io/configuration-php/tree/master.svg?style=svg)](https://circleci.com/gh/spacetab-io/configuration-php/tree/master)
 [![codecov](https://codecov.io/gh/spacetab-io/configuration-php/branch/master/graph/badge.svg)](https://codecov.io/gh/spacetab-io/configuration-php)
 
-Configuration module for microservices written on PHP. Specially created
-for follow up corporate standards of application configuration.
+Configuration module for PHP that supports multiple application stages like `dev`, `prod` or `something else` 
+and overrides the `defaults` stage.
 
 ## Installation
 
@@ -15,7 +15,7 @@ composer require spacetab-io/configuration
 
 ## Usage
 
-By default path to configuration directory and application stage
+By default, path to configuration directory and application stage
 loading from `/app/configuration` with `local` stage.
 
 1) Simple
@@ -76,6 +76,12 @@ $conf->load();
 $conf->get('key'); // full example on the top
 ```
 
+If you want you can use [this package](https://github.com/spacetab-io/logger-php) for logs:
+
+```bash
+composer require spacetab-io/logger
+```
+
 That all.
 
 ## CLI utility
@@ -103,7 +109,7 @@ If you have `~/.composer/vendor/bin` in globals path, you can try run command:
 st-conf help dump
 ```
 
-Otherwise you can be register that directory:
+Otherwise, you can be register that directory:
 ```bash
 echo 'export PATH=~/.composer/vendor/bin:$PATH' >> ~/.bash_profile
 source ~/.bash_profile
