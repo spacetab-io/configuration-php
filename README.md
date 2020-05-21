@@ -28,8 +28,11 @@ $conf->load();
 
 var_dump($conf->all()); // get all config
 echo $conf->get('foo.bar'); // get nested key use dot notation
-echo $conf['foo.bar']; // thie same, but use ArrayAccess interface.
+echo $conf['foo.bar']; // the same, but use ArrayAccess interface.
 ```
+
+Supported dot-notation syntax with an asterisk in `get` method. 
+You can read about it here: https://github.com/spacetab-io/obelix-php
 
 2) If u would like override default values, you can pass 2 arguments to
 class constructor or set up use setters.

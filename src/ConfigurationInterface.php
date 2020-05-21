@@ -16,7 +16,10 @@ interface ConfigurationInterface
      * E.g get('x.y', 'foo') => returns the value of $config['x']['y']
      * And if not exist, return 'foo'
      *
-     * @param mixed $key
+     * Supported dot-notation syntax with an asterisk.
+     * You can read about it here: https://github.com/spacetab-io/obelix-php
+     *
+     * @param string $key
      * @param mixed $default
      * @return mixed
      */

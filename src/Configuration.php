@@ -9,6 +9,7 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
 use Spacetab\Configuration\Exception\ConfigurationException;
+use Spacetab\Obelix;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -55,10 +56,8 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
 
     /**
      * Config tree goes here.
-     *
-     * @var array<mixed>
      */
-    private array $config;
+    private Obelix\Dot $config;
 
     /**
      * @var string
@@ -75,8 +74,6 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
      *
      * @param null|string $path
      * @param null|string $stage
-     *
-     * @throws \Spacetab\Configuration\Exception\ConfigurationException
      */
     public function __construct(?string $path = null, ?string $stage = null)
     {
@@ -109,22 +106,19 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
     /**
      * Get's a value from config by dot notation
      * E.g get('x.y', 'foo') => returns the value of $config['x']['y']
-     * And if not exist, return 'foo'
+     * And if not exist, return 'foo'.
      *
-     * @param mixed $key
+     * Supported dot-notation syntax with an asterisk.
+     * You can read about it here: https://github.com/spacetab-io/obelix-php
+     *
+     * @param string $key
      * @param mixed $default
      *
      * @return mixed
      */
     public function get($key, $default = null)
     {
-        $config = $this->config;
-
-        array_map(function ($key) use (&$config, $default) {
-            $config = $config[$key] ?? $default;
-        }, explode('.', $key));
-
-        return $config;
+        return $this->config->get($key, $default)->getValue();
     }
 
     /**
@@ -134,7 +128,7 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
      */
     public function all(): array
     {
-        return $this->config;
+        return $this->config->toArray();
     }
 
     /**
@@ -266,10 +260,12 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
             ? $this->parseConfiguration($this->getStage())
             : [];
 
-        $this->config = $this->arrayMergeRecursive(
+        $array = $this->arrayMergeRecursive(
             $this->parseConfiguration(),
             $second
         );
+
+        $this->config = new Obelix\Dot($array);
 
         $this->logger->info('Configuration loaded.');
 
@@ -310,6 +306,12 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
         $config = [];
         foreach ($files as $filename) {
             $content   = Yaml::parseFile($filename);
+
+            if (empty($content)) {
+                $this->logger->info(sprintf('File %s is empty. Skip it.', $filename));
+                continue;
+            }
+
             $directory = basename(pathinfo($filename, PATHINFO_DIRNAME));
             $top       = key($content);
 
