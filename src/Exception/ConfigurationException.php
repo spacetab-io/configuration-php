@@ -20,12 +20,14 @@ class ConfigurationException extends Exception
         parent::__construct(sprintf("%s\n\nDocumentation available here: %s", $message, self::SPECIFICATION_URI));
     }
 
-    /**
-     * @return self
-     */
     public static function operationNotAllowed(): self
     {
         return new self('Operation not allowed.');
+    }
+
+    public static function configurationNotLoaded(): self
+    {
+        return new self('Configuration not loaded. Method `load` called?');
     }
 
     /**
@@ -41,16 +43,6 @@ class ConfigurationException extends Exception
         $two = "CONFIG_PATH=$path and STAGE=$stage is correct?";
 
         return new self("$one\n$two");
-    }
-
-    /**
-     * @param string $path
-     *
-     * @return self
-     */
-    public static function pathNotFound(string $path): self
-    {
-        return new self("Path [$path] not found.");
     }
 
     /**

@@ -107,20 +107,28 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
      * @param string $key
      * @param mixed|null $default
      *
+     * @throws ConfigurationException
+     *
      * @return mixed
      */
     public function get(string $key, mixed $default = null): mixed
     {
+        $this->ensureThatConfigurationIsLoaded();
+
         return $this->config->get($key, $default)->getValue();
     }
 
     /**
      * Gets all the tree config.
      *
+     * @throws ConfigurationException
+     *
      * @return array
      */
     public function all(): array
     {
+        $this->ensureThatConfigurationIsLoaded();
+
         return $this->config->toArray();
     }
 
@@ -410,5 +418,15 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
         }
 
         throw ConfigurationException::autoFindConfigurationDirFailed(self::$possibleLocations);
+    }
+
+    /**
+     * @throws ConfigurationException
+     */
+    private function ensureThatConfigurationIsLoaded(): void
+    {
+        if (!isset($this->config)) {
+            throw ConfigurationException::configurationNotLoaded();
+        }
     }
 }
