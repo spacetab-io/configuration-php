@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Spacetab\Configuration\Console;
 
 use Spacetab\Configuration\Configuration;
+use Spacetab\Configuration\Exception\ConfigurationException;
 use Spacetab\Logger\Logger;
 use Psr\Log\LogLevel;
 use Symfony\Component\Console\Command\Command;
@@ -15,6 +16,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class DumpConfigCommand extends Command
 {
+    protected static $defaultName = 'dump';
+    protected static $defaultDescription = 'Dump loaded configuration';
 
     protected function configure(): void
     {
@@ -32,9 +35,9 @@ class DumpConfigCommand extends Command
     /**
      * Execute command, captain.
      *
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     * @throws \Spacetab\Configuration\Exception\ConfigurationException
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @throws ConfigurationException
      *
      * @return int
      */
@@ -58,6 +61,6 @@ class DumpConfigCommand extends Command
 
         $output->writeln($string);
 
-        return 0;
+        return Command::SUCCESS;
     }
 }

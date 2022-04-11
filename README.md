@@ -13,6 +13,12 @@ and overrides the `defaults` stage.
 composer require spacetab-io/configuration
 ```
 
+#### Versions map
+
+* Package with version `4.*` requires PHP >= `8.1`
+* Package with version `3.*` requires PHP >= `7.4` <= `8.0`
+* Package with version `2.*` requires PHP < `7.4`
+
 ## Usage
 
 By default, path to configuration directory and application stage
@@ -90,7 +96,7 @@ That all.
 ## CLI utility
 
 Also, you can install simple small cli-utility to dump total results of merged config.
-It possible with multiple ways:
+It is possible with multiple ways:
 
 1) Install to `/usr/local/bin` as global binary
 
@@ -149,14 +155,14 @@ Help:
 
 ## Depends
 
-* \>= PHP 7.4 (for prev version use `2.x` releases of library)
+* \>= PHP 8.1
 * Composer for install package
 
 ## License
 
 The MIT License
 
-Copyright © 2020 spacetab.io, Inc. https://spacetab.io
+Copyright © 2022 spacetab.io, Inc. https://spacetab.io
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

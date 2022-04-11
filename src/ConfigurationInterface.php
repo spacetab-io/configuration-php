@@ -23,12 +23,12 @@ interface ConfigurationInterface
      * @param mixed $default
      * @return mixed
      */
-    public function get($key, $default = null);
+    public function get(string $key, mixed $default = null): mixed;
 
     /**
      * Gets all the tree config
      *
-     * @return array<mixed>
+     * @return array
      */
     public function all(): array;
 }

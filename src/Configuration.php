@@ -15,7 +15,7 @@ use Symfony\Component\Yaml\Yaml;
 /**
  * Class Configuration
  *
- * @implements \ArrayAccess<mixed, mixed>
+ * @implements ArrayAccess<array-key, mixed>
  * @package Spacetab\Configuration
  */
 final class Configuration implements ConfigurationInterface, ArrayAccess, LoggerAwareInterface
@@ -59,14 +59,7 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
      */
     private Obelix\Dot $config;
 
-    /**
-     * @var string
-     */
     private string $path;
-
-    /**
-     * @var string
-     */
     private string $stage;
 
     /**
@@ -77,8 +70,8 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
      */
     public function __construct(?string $path = null, ?string $stage = null)
     {
-        $envPath  = $this->getEnvVariable(self::CONFIG_PATH, self::DEFAULT_CONFIG_PATH);
-        $envStage = $this->getEnvVariable(self::STAGE, self::DEFAULT_STAGE);
+        $envPath  = self::getEnvVariable(self::CONFIG_PATH, self::DEFAULT_CONFIG_PATH);
+        $envStage = self::getEnvVariable(self::STAGE, self::DEFAULT_STAGE);
 
         null === $path ? $this->setPath($envPath) : $this->setPath($path);
         null === $stage ? $this->setStage($envStage) : $this->setStage($stage);
@@ -94,7 +87,7 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
      * Specially for lazy-based programmers like me.
      *
      * @param string|null $stage
-     * @throws \Spacetab\Configuration\Exception\ConfigurationException
+     * @throws ConfigurationException
      *
      * @return Configuration
      */
@@ -104,19 +97,19 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
     }
 
     /**
-     * Get's a value from config by dot notation
-     * E.g get('x.y', 'foo') => returns the value of $config['x']['y']
+     * Gets a value from config by dot notation
+     * E.g. get('x.y', 'foo') => returns the value of $config['x']['y']
      * And if not exist, return 'foo'.
      *
      * Supported dot-notation syntax with an asterisk.
      * You can read about it here: https://github.com/spacetab-io/obelix-php
      *
      * @param string $key
-     * @param mixed $default
+     * @param mixed|null $default
      *
      * @return mixed
      */
-    public function get($key, $default = null)
+    public function get(string $key, mixed $default = null): mixed
     {
         return $this->config->get($key, $default)->getValue();
     }
@@ -124,7 +117,7 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
     /**
      * Gets all the tree config.
      *
-     * @return array<mixed>
+     * @return array
      */
     public function all(): array
     {
@@ -178,7 +171,7 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
     }
 
     /**
-     * Whether a offset exists
+     * Whether an offset exists
      *
      * @link https://php.net/manual/en/arrayaccess.offsetexists.php
      * @param mixed $offset <p>
@@ -188,7 +181,7 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
      *
      * @return boolean true on success or false on failure.
      */
-    public function offsetExists($offset): bool
+    public function offsetExists(mixed $offset): bool
     {
         return ! empty($this->get($offset));
     }
@@ -204,7 +197,7 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
      *
      * @return mixed Can return all value types.
      */
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
         return $this->get($offset);
     }
@@ -220,11 +213,11 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
      * The value to set.
      * </p>
      * @since 5.0.0
-     * @throws \Spacetab\Configuration\Exception\ConfigurationException
+     * @throws ConfigurationException
      *
      * @return void
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         throw ConfigurationException::operationNotAllowed();
     }
@@ -237,11 +230,11 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
      * The offset to unset.
      * </p>
      * @since 5.0.0
-     * @throws \Spacetab\Configuration\Exception\ConfigurationException
+     * @throws ConfigurationException
      *
      * @return void
      */
-    public function offsetUnset($offset): void
+    public function offsetUnset(mixed $offset): void
     {
         throw ConfigurationException::operationNotAllowed();
     }
@@ -249,7 +242,7 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
     /**
      * Initialize all the magic down here
      *
-     * @throws \Spacetab\Configuration\Exception\ConfigurationException
+     * @throws ConfigurationException
      */
     public function load(): Configuration
     {
@@ -288,9 +281,9 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
      * Parses configuration and makes a tree of it.
      *
      * @param string $stage
-     * @throws \Spacetab\Configuration\Exception\ConfigurationException
+     * @throws ConfigurationException
      *
-     * @return array<mixed>
+     * @return array
      */
     private function parseConfiguration(string $stage = self::DEFAULT_STAGE): array
     {
@@ -346,38 +339,33 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
      *
      * @param array ...$arrays
      *
-     * @return array|mixed
+     * @return array
      */
-    private function arrayMergeRecursive(array ...$arrays)
+    private function arrayMergeRecursive(array ...$arrays): array
     {
         $base = array_shift($arrays);
-        if ( ! is_array($base)) {
-            $base = empty($base) ? [] : [$base];
-        }
 
         foreach ($arrays as $append) {
-            if ( ! is_array($append)) {
+            if (!is_array($append)) {
                 $append = [$append];
             }
             foreach ($append as $key => $value) {
-                if ( ! array_key_exists($key, $base) && ! is_numeric($key)) {
-                    $base[$key] = $append[$key];
+                if (!array_key_exists($key, $base) && ! is_numeric($key)) {
+                    $base[$key] = $value;
                     continue;
                 }
 
                 if ((is_array($value) || (isset($base[$key]) && is_array($base[$key]))) && $this->isAssoc($value)) {
                     $base[$key] = $this->arrayMergeRecursive(
                         (array) $base[$key],
-                        (array) $append[$key]
+                        (array) $value
                     );
-                } else {
-                    if (is_numeric($key)) {
-                        if ( ! in_array($value, $base)) {
-                            $base[] = $value;
-                        }
-                    } else {
-                        $base[$key] = $value;
+                } else if (is_numeric($key)) {
+                    if (!in_array($value, $base, true)) {
+                        $base[] = $value;
                     }
+                } else {
+                    $base[$key] = $value;
                 }
             }
         }
@@ -388,7 +376,7 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
     /**
      * Check if array is associative or sequential list.
      *
-     * @param array<mixed> $array
+     * @param array $array
      *
      * @return bool
      */
@@ -398,19 +386,19 @@ final class Configuration implements ConfigurationInterface, ArrayAccess, Logger
             return false;
         }
 
-        return array_keys($array) !== range(0, count($array) - 1);
+        return !array_is_list($array);
     }
 
     /**
      * Automatically find configuration in possible paths.
      *
-     * @throws \Spacetab\Configuration\Exception\ConfigurationException
+     * @throws ConfigurationException
      *
      * @return string
      */
     private static function findDirectories(): string
     {
-        if ($value = trim((string) self::getEnvVariable(self::CONFIG_PATH))) {
+        if ($value = trim(self::getEnvVariable(self::CONFIG_PATH))) {
             // add env config path to top of possible locations.
             array_unshift(self::$possibleLocations, $value);
         }

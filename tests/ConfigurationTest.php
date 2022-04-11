@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Spacetab\Configuration\Tests;
 
 use Exception;
@@ -10,10 +12,7 @@ use Symfony\Component\Yaml\Yaml;
 
 class ConfigurationTest extends TestCase
 {
-    /**
-     * @return array
-     */
-    public function getTrueMergedConfigurationForTestStage()
+    public function getTrueMergedConfigurationForTestStage(): array
     {
         return [
             'hotelbook_params' => [
@@ -42,7 +41,7 @@ class ConfigurationTest extends TestCase
         ];
     }
 
-    public function testConfigurationModuleFlowWithDefaultBehavior()
+    public function testConfigurationModuleFlowWithDefaultBehavior(): void
     {
         putenv('CONFIG_PATH=' . __DIR__ . '/configuration');
         putenv('STAGE=test');
@@ -53,7 +52,7 @@ class ConfigurationTest extends TestCase
         $this->followAssertions($conf);
     }
 
-    public function testConfigurationModuleFlowWithPassingPathAndStage()
+    public function testConfigurationModuleFlowWithPassingPathAndStage(): void
     {
         $conf = new Configuration(__DIR__ . '/configuration', 'test');
         $conf->load();
@@ -61,7 +60,7 @@ class ConfigurationTest extends TestCase
         $this->followAssertions($conf);
     }
 
-    public function testDefaultPathAndValue()
+    public function testDefaultPathAndValue(): void
     {
         putenv('CONFIG_PATH=');
         putenv('STAGE=');
@@ -79,9 +78,9 @@ class ConfigurationTest extends TestCase
     }
 
     /**
-     * @param \Spacetab\Configuration\Configuration $conf
+     * @param Configuration $conf
      */
-    private function followAssertions(Configuration $conf)
+    private function followAssertions(Configuration $conf): void
     {
         $array = $this->getTrueMergedConfigurationForTestStage();
 
@@ -92,7 +91,7 @@ class ConfigurationTest extends TestCase
         $this->assertSame($array['hotelbook_params']['area_mapping'], $conf['hotelbook_params.area_mapping']);
     }
 
-    public function testHowConfigurationMergeArraysWithEmpty()
+    public function testHowConfigurationMergeArraysWithEmpty(): void
     {
         $config = [
             'content_security_policy' => [
@@ -112,7 +111,7 @@ class ConfigurationTest extends TestCase
         $this->assertSame($config, $conf->all());
     }
 
-    public function testHowConfigurationMergeArrays()
+    public function testHowConfigurationMergeArrays(): void
     {
         $config = [
             'content_security_policy' => [
@@ -131,7 +130,7 @@ class ConfigurationTest extends TestCase
         $this->assertSame($config, $conf->all());
     }
 
-    public function testHowConfigurationCanBeFoundDirectoryAutomatically()
+    public function testHowConfigurationCanBeFoundDirectoryAutomatically(): void
     {
         $this->xcopy(__DIR__ . '/configuration', './configuration');
 
@@ -144,7 +143,7 @@ class ConfigurationTest extends TestCase
         $this->deleteDirectory('./configuration');
     }
 
-    public function testHowConfigurationDumpYaml()
+    public function testHowConfigurationDumpYaml(): void
     {
         $conf = new Configuration(__DIR__ . '/configuration', 'test');
         $conf->load();
@@ -153,7 +152,7 @@ class ConfigurationTest extends TestCase
         $this->assertSame($expected, $conf->dump());
     }
 
-    public function testHowWorksUserMistakePrevention()
+    public function testHowWorksUserMistakePrevention(): void
     {
         $this->expectException(ConfigurationException::class);
         $this->expectExceptionMessageMatches('/Developer error\! STAGE .*/');
@@ -173,7 +172,7 @@ class ConfigurationTest extends TestCase
      * @link        http://aidanlister.com/2004/04/recursively-copying-directories-in-php/
      * @author      Aidan Lister <aidan@php.net>
      */
-    private function xcopy($source, $dest, $permissions = 0755)
+    private function xcopy(string $source, string $dest, int $permissions = 0755): bool
     {
         // Check for symlinks
         if (is_link($source)) {
@@ -194,7 +193,7 @@ class ConfigurationTest extends TestCase
         $dir = dir($source);
         while (false !== $entry = $dir->read()) {
             // Skip pointers
-            if ($entry == '.' || $entry == '..') {
+            if ($entry === '.' || $entry === '..') {
                 continue;
             }
 
@@ -213,7 +212,7 @@ class ConfigurationTest extends TestCase
      * @param $dir
      * @return bool
      */
-    private function deleteDirectory($dir)
+    private function deleteDirectory($dir): bool
     {
         if ( ! file_exists($dir)) {
             return true;
@@ -224,7 +223,7 @@ class ConfigurationTest extends TestCase
         }
 
         foreach (scandir($dir) as $item) {
-            if ($item == '.' || $item == '..') {
+            if ($item === '.' || $item === '..') {
                 continue;
             }
 

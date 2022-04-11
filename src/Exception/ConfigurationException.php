@@ -8,7 +8,7 @@ use Exception;
 
 class ConfigurationException extends Exception
 {
-    private const SPECIFICATION_URI = 'https://confluence.teamc.io/pages/viewpage.action?pageId=4227704';
+    private const SPECIFICATION_URI = 'https://confluence.spacetab.io/pages/viewpage.action?pageId=4227704';
 
     /**
      * ConfigurationException constructor.
@@ -35,12 +35,12 @@ class ConfigurationException extends Exception
      *
      * @return self
      */
-    public static function filesNotFound(string $pattern, string $path, string $stage)
+    public static function filesNotFound(string $pattern, string $path, string $stage): self
     {
-        $one = "Files not found. Used glob pattern: {$pattern}.";
-        $two = "CONFIG_PATH={$path} and STAGE={$stage} is correct?";
+        $one = "Files not found. Used glob pattern: $pattern.";
+        $two = "CONFIG_PATH=$path and STAGE=$stage is correct?";
 
-        return new self("{$one}\n{$two}");
+        return new self("$one\n$two");
     }
 
     /**
@@ -50,7 +50,7 @@ class ConfigurationException extends Exception
      */
     public static function pathNotFound(string $path): self
     {
-        return new self("Path [{$path}] not found.");
+        return new self("Path [$path] not found.");
     }
 
     /**
@@ -62,10 +62,10 @@ class ConfigurationException extends Exception
      */
     public static function fileNotEqualsCurrentStage(string $stage, string $top, string $filename): self
     {
-        $one = "Developer error! STAGE [{$stage}] is not equals top of file [{$top}].";
-        $two = "Please, fix the file [{$filename}].";
+        $one = "Developer error! STAGE [$stage] is not equals top of file [$top].";
+        $two = "Please, fix the file [$filename].";
 
-        return new self("{$one} {$two}");
+        return new self("$one $two");
     }
 
     /**
@@ -77,7 +77,7 @@ class ConfigurationException extends Exception
     {
        return new self(sprintf(
            'Configuration directory not found in known path\'s: %s',
-           join(',', $possibleLocations)
+           implode(', ', $possibleLocations)
        ));
     }
 }

@@ -12,7 +12,7 @@ interface ConfigurationAwareInterface
     /**
      * Sets a configuration instance on the object.
      *
-     * @param \Spacetab\Configuration\ConfigurationInterface $configuration
+     * @param ConfigurationInterface $configuration
      *
      * @return void
      */

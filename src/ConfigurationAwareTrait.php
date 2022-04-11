@@ -12,14 +12,14 @@ trait ConfigurationAwareTrait
     /**
      * The Configuration instance.
      *
-     * @var \Spacetab\Configuration\ConfigurationInterface
+     * @var ConfigurationInterface
      */
     protected ConfigurationInterface $configuration;
 
     /**
      * Sets a configuration.
      *
-     * @param \Spacetab\Configuration\ConfigurationInterface $configuration
+     * @param ConfigurationInterface $configuration
      */
     public function setConfiguration(ConfigurationInterface $configuration): void
     {
